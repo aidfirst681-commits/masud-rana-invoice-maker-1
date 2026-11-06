@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10243a">
+<title>MASUD RANA Invoice Maker</title>
+<style>
+:root{--navy:#10243a;--gold:#c69a43;--ink:#1c2935;--muted:#687786;--line:#dce3e9;--bg:#f2f5f8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Arial,sans-serif}
+header{background:linear-gradient(120deg,#10243a,#1e3d59);color:white;padding:22px max(18px,calc((100% - 1100px)/2));}
+header h1{font-size:22px;margin:0 0 4px}header p{margin:0;color:#d7e1e9}
+main{max-width:1100px;margin:22px auto;padding:0 14px;display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:18px}
+.panel,.paper{background:white;border:1px solid var(--line);border-radius:14px;box-shadow:0 5px 20px #18324a0d}
+.panel{padding:18px;height:max-content}.panel h2{font-size:17px;margin:0 0 14px;color:var(--navy)}
+label{display:block;font-size:12px;font-weight:700;color:#526273;margin:10px 0 5px}
+input,textarea,select{width:100%;padding:10px;border:1px solid #cfd8e1;border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+textarea{min-height:62px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:0;border-radius:8px;padding:11px 14px;font-weight:700;cursor:pointer}
+.primary{background:var(--gold);color:#172536}.secondary{background:#e9eef3;color:#26394b}.danger{background:#fbe9e7;color:#a33227}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.items-head,.item{display:grid;grid-template-columns:2fr .65fr .8fr 34px;gap:6px;align-items:center}
+.items-head{font-size:11px;color:var(--muted);font-weight:700;margin:14px 0 4px}
+.item{margin-bottom:7px}.item input{min-width:0;padding:8px}
+.remove{padding:8px;background:#fbe9e7;color:#a33227}
+.paper{padding:clamp(16px,3vw,34px);min-height:650px}
+.invoice-top{display:flex;justify-content:space-between;gap:15px;border-bottom:3px solid var(--gold);padding-bottom:18px}
+.brand{font-size:20px;font-weight:800;color:var(--navy);letter-spacing:.2px}.brand small{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:3px}
+.inv-title{text-align:right;font-size:27px;font-weight:800;color:var(--navy)}
+.meta{font-size:12px;color:var(--muted);margin-top:7px}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 0}
+.details h3{font-size:10px;color:var(--gold);letter-spacing:1.2px;margin:0 0 6px}
+.details p{margin:2px 0;white-space:pre-wrap}
+table{width:100%;border-collapse:collapse;margin-top:18px}th{background:var(--navy);color:white;text-align:left;font-size:11px;padding:10px 8px}td{padding:10px 8px;border-bottom:1px solid var(--line);font-size:13px}td.num,th.num{text-align:right}
+.totals{margin:18px 0 0 auto;width:min(280px,100%)}.totalrow{display:flex;justify-content:space-between;padding:6px 0}.grand{border-top:2px solid var(--gold);font-size:18px;font-weight:800;color:var(--navy);padding-top:10px}
+.notes{border-top:1px solid var(--line);margin-top:28px;padding-top:14px;font-size:12px;color:var(--muted);white-space:pre-wrap}
+.footer{text-align:center;color:#9aa6b1;font-size:10px;margin-top:30px}
+@media(max-width:800px){main{grid-template-columns:1fr}.paper{min-height:0}.invoice-top{flex-direction:column}.inv-title{text-align:left}.details{gap:10px}}
+@media print{body{background:white}header,.panel{display:none!important}main{display:block;max-width:none;margin:0;padding:0}.paper{border:0;box-shadow:none;border-radius:0;padding:8mm;min-height:0}.footer{margin-top:18px}@page{size:A4;margin:10mm}}
+</style>
+</head>
+<body>
+<header><h1>MASUD RANA Invoice Maker</h1><p>Gulf Designer Holding Company · Professional invoice generator</p></header>
+<main>
+<section class="panel">
+<h2>Invoice details</h2>
+<label>Invoice number</label><input id="number" value="GDH-0001">
+<div class="row"><div><label>Invoice date</label><input id="date" type="date"></div><div><label>Due date</label><input id="due" type="date"></div></div>
+<label>Customer / Bill to</label><input id="customer" placeholder="Customer name">
+<label>Customer address / phone</label><textarea id="address" placeholder="Address, phone or VAT number"></textarea>
+<label>Company contact details</label><input id="contact" placeholder="Phone / email / address">
+<div class="items-head"><span>Description</span><span>Qty</span><span>Price (SAR)</span><span></span></div>
+<div id="items"></div>
+<button class="secondary" id="add">+ Add item</button>
+<div class="row"><div><label>Discount (SAR)</label><input id="discount" type="number" min="0" value="0"></div><div><label>VAT (%)</label><input id="vat" type="number" min="0" value="0"></div></div>
+<label>Payment method / status</label><input id="payment" placeholder="Cash / Bank transfer · Paid / Unpaid">
+<label>Notes / terms</label><textarea id="notes" placeholder="Thank you for your business."></textarea>
+<div class="actions"><button class="primary" id="print">Print / Save PDF</button><button class="secondary" id="save">Save draft</button><button class="secondary" id="load">Load draft</button><button class="danger" id="clear">Clear form</button></div>
+<p style="font-size:11px;color:#748391;margin:12px 0 0">Tip: Use “Print / Save PDF” and choose “Save as PDF” on your phone or computer.</p>
+</section>
+<section class="paper" id="invoice">
+<div class="invoice-top"><div><div class="brand">GULF DESIGNER HOLDING COMPANY<small>Prepared by MASUD RANA</small></div><div class="meta" id="previewContact"></div></div><div><div class="inv-title">INVOICE</div><div class="meta">Invoice No: <b id="pNumber"></b><br>Date: <span id="pDate"></span><br>Due: <span id="pDue"></span></div></div></div>
+<div class="details"><div><h3>BILL TO</h3><p id="pCustomer">Customer name</p><p id="pAddress"></p></div><div><h3>PAYMENT DETAILS</h3><p id="pPayment">—</p></div></div>
+<table><thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Amount</th></tr></thead><tbody id="previewItems"></tbody></table>
+<div class="totals"><div class="totalrow"><span>Subtotal</span><b id="subtotal">SAR 0.00</b></div><div class="totalrow"><span>Discount</span><b id="pDiscount">SAR 0.00</b></div><div class="totalrow"><span>VAT</span><b id="pVat">SAR 0.00</b></div><div class="totalrow grand"><span>Total</span><span id="total">SAR 0.00</span></div></div>
+<div class="notes"><b>NOTES / TERMS</b><div id="pNotes">Thank you for your business.</div></div><div class="footer">GULF DESIGNER HOLDING COMPANY · MASUD RANA</div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id), money=n=>'SAR '+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function addItem(desc='',qty=1,price=0){const d=document.createElement('div');d.className='item';d.innerHTML='<input class="desc" placeholder="CCTV camera / service"><input class="qty" type="number" min="0" step="any"><input class="price" type="number" min="0" step="any"><button class="remove" title="Remove">×</button>';d.querySelector('.desc').value=desc;d.querySelector('.qty').value=qty;d.querySelector('.price').value=price;d.querySelectorAll('input').forEach(x=>x.addEventListener('input',render));d.querySelector('button').onclick=()=>{d.remove();render()};$('items').appendChild(d);render()}
+function val(id){return $(id).value}
+function render(){ $('pNumber').textContent=val('number')||'—';$('pDate').textContent=val('date')||'—';$('pDue').textContent=val('due')||'—';$('pCustomer').textContent=val('customer')||'Customer name';$('pAddress').textContent=val('address');$('previewContact').textContent=val('contact');$('pPayment').textContent=val('payment')||'—';$('pNotes').textContent=val('notes')||'Thank you for your business.';
+let subtotal=0;$('previewItems').innerHTML='';document.querySelectorAll('.item').forEach(it=>{let desc=it.querySelector('.desc').value||'Item';let q=Number(it.querySelector('.qty').value)||0,p=Number(it.querySelector('.price').value)||0,a=q*p;subtotal+=a;let tr=document.createElement('tr');[desc,q.toLocaleString('en-US'),money(p),money(a)].forEach((v,i)=>{let td=document.createElement('td');td.textContent=v;if(i)td.className='num';tr.appendChild(td)});$('previewItems').appendChild(tr)});
+let discount=Math.max(0,Number(val('discount'))||0),base=Math.max(0,subtotal-discount),vat=base*Math.max(0,Number(val('vat'))||0)/100,total=base+vat;$('subtotal').textContent=money(subtotal);$('pDiscount').textContent=money(discount);$('pVat').textContent=money(vat);$('total').textContent=money(total)}
+document.querySelectorAll('input,textarea').forEach(x=>x.addEventListener('input',render));$('add').onclick=()=>addItem();$('print').onclick=()=>window.print();
+const fields=['number','date','due','customer','address','contact','discount','vat','payment','notes'];
+$('save').onclick=()=>{let data={};fields.forEach(k=>data[k]=val(k));data.items=[...document.querySelectorAll('.item')].map(it=>[it.querySelector('.desc').value,it.querySelector('.qty').value,it.querySelector('.price').value]);localStorage.setItem('masudInvoiceDraft',JSON.stringify(data));alert('Draft saved on this device.');};
+$('load').onclick=()=>{let raw=localStorage.getItem('masudInvoiceDraft');if(!raw){alert('No saved draft on this device.');return}let d=JSON.parse(raw);fields.forEach(k=>$(k).value=d[k]??'');$('items').innerHTML='';(d.items||[]).forEach(a=>addItem(...a));render();};
+$('clear').onclick=()=>{if(!confirm('Clear all invoice details?'))return;fields.forEach(k=>$(k).value='');$('number').value='GDH-0001';$('discount').value='0';$('vat').value='0';$('items').innerHTML='';addItem();render()};
+$('date').value=new Date().toISOString().slice(0,10);addItem();render();
+</script>
+</body></html>
